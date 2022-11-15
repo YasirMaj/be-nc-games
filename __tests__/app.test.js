@@ -117,3 +117,52 @@ describe("GET /reviews/:review_id", () => {
       });
   });
 });
+
+describe("GET /reviews/:review_id/comments", () => {
+  test("GET - status:200, responds with a review object", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toHaveLength(3);
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              review_id: 2,
+            })
+          );
+        });
+      });
+  });
+  test("GET - status:404 sends an appropriate error message when given a valid but non-existent id", () => {
+    return request(app)
+      .get("/api/reviews/999/comments")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("ID not Found!");
+      });
+  });
+  test("GET - status:400 sends an appropriate error message when given a invalid id (wrong data type)", () => {
+    return request(app)
+      .get("/api/reviews/something-bad/comments")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Bad Request!");
+      });
+  });
+  test("GET - status:200 sends an empty array when review_id has no comments", () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toEqual([]);
+      });
+  });
+});
