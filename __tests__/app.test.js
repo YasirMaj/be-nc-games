@@ -117,3 +117,79 @@ describe("GET /reviews/:review_id", () => {
       });
   });
 });
+
+describe("GET /reviews/:review_id/comments", () => {
+  test("GET - status:200, responds with an array of comment objects", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toHaveLength(3);
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              review_id: 2,
+            })
+          );
+        });
+      });
+  });
+  test("GET - status:200, responds with a comment object with the correct content", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments[0]).toEqual(
+          expect.objectContaining({
+            comment_id: 5,
+            votes: 13,
+            created_at: "2021-01-18T10:24:05.410Z",
+            author: "mallionaire",
+            body: "Now this is a story all about how, board games turned my life upside down",
+            review_id: 2,
+          })
+        );
+      });
+  });
+  test("GET - status:200, can order array of comments by descending date", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET - status:404 sends an appropriate error message when given a valid but non-existent id", () => {
+    return request(app)
+      .get("/api/reviews/999/comments")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("Resource not found");
+      });
+  });
+  test("GET - status:400 sends an appropriate error message when given a invalid id (wrong data type)", () => {
+    return request(app)
+      .get("/api/reviews/something-bad/comments")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Bad Request!");
+      });
+  });
+  test("GET - status:200 sends an empty array when review_id has no comments", () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toEqual([]);
+      });
+  });
+});
