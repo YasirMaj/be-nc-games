@@ -30,14 +30,6 @@ describe("GET /api/categories", () => {
         });
       });
   });
-  test("GET - status:404, not found", () => {
-    return request(app)
-      .get("/api/badurl")
-      .expect(404)
-      .then((res) => {
-        expect(res.body.msg).toBe("Invalid URL!");
-      });
-  });
 });
 
 describe("GET /api/reviews", () => {
@@ -71,9 +63,12 @@ describe("GET /api/reviews", () => {
       .expect(200)
       .then(({ body }) => {
         const { reviews } = body;
-        expect(reviews).toBeSortedBy("created_at", {descending: true});
+        expect(reviews).toBeSortedBy("created_at", { descending: true });
       });
   });
+});
+
+describe("GET - status:404, bad URL request", () => {
   test("GET - status:404, not found", () => {
     return request(app)
       .get("/api/badurl")
