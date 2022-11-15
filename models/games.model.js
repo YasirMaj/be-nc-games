@@ -1,5 +1,6 @@
 const db = require("../db/connection");
-const { checkReviewExists } = require("../db/seeds/utils");
+const reviews = require("../db/data/test-data/reviews");
+const { checkExists } = require("../db/seeds/utils");
 
 exports.selectCategories = () => {
   return db.query("SELECT * FROM categories;").then((categories) => {
@@ -51,12 +52,13 @@ exports.selectReviewById = (review_id) => {
 };
 
 exports.selectCommentsByReviewID = (review_id) => {
-  return checkReviewExists(review_id).then(() => {
+  return checkExists('reviews', 'review_id', review_id).then(() => {
     return db
       .query(
         `
       SELECT * FROM comments
-      WHERE review_id = $1;
+      WHERE review_id = $1
+      ORDER BY created_at DESC;
     `,
         [review_id]
       )
