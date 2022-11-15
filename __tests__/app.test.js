@@ -78,3 +78,42 @@ describe("GET - status:404, bad URL request", () => {
       });
   });
 });
+
+describe("GET /reviews/:review_id", () => {
+  test("GET - status:200, responds with a review object", () => {
+    return request(app)
+      .get("/api/reviews/1")
+      .expect(200)
+      .then(({ body }) => {
+        const { review } = body;
+        expect(review).toBeInstanceOf(Object);
+        expect.objectContaining({
+          review_id: expect.any(Number),
+          title: expect.any(String),
+          category: expect.any(String),
+          designer: expect.any(String),
+          owner: expect.any(String),
+          review_body: expect.any(String),
+          review_img_url: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+        });
+      });
+  });
+  test("GET - status:404 sends an appropriate error message when given a valid but non-existent id", () => {
+    return request(app)
+      .get("/api/reviews/999")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("ID not Found!");
+      });
+  });
+  test("GET - status:400 sends an appropriate error message when given a invalid id (wrong data type)", () => {
+    return request(app)
+      .get("/api/reviews/something-bad")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Bad Request!");
+      });
+  });
+});
