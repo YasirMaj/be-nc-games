@@ -88,7 +88,7 @@ describe("GET /reviews/:review_id", () => {
         const { review } = body;
         expect(review).toBeInstanceOf(Object);
         expect.objectContaining({
-          review_id: expect.any(Number),
+          review_id: 1,
           title: expect.any(String),
           category: expect.any(String),
           designer: expect.any(String),
