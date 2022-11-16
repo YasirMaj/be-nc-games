@@ -5,6 +5,7 @@ const {
   selectCommentsByReviewID,
   insertComment,
   updateReviewById,
+  selectUsers,
 } = require("../models/games.model");
 
 exports.getCategories = (req, res, next) => {
@@ -61,10 +62,18 @@ exports.patchReviewById = (req, res, next) => {
   if (!inc_votes) {
     res.status(400).send({ msg: "Missing Input Data!" });
   } else {
-  updateReviewById(review_id, inc_votes)
-    .then((updatedReview) => {
-      res.status(200).send({ review: updatedReview });
+    updateReviewById(review_id, inc_votes)
+      .then((updatedReview) => {
+        res.status(200).send({ review: updatedReview });
+      })
+      .catch(next);
+  }
+};
+
+exports.getUsers = (req, res, next) => {
+  selectUsers()
+    .then((users) => {
+      res.status(200).send({ users });
     })
     .catch(next);
-  }
 };

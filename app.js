@@ -11,6 +11,7 @@ const {
   getCommentsByReviewID,
   postComment,
   patchReviewById,
+  getUsers,
 } = require("./controllers/games.controller");
 
 const app = express();
@@ -28,6 +29,8 @@ app.get("/api/reviews/:review_id/comments", getCommentsByReviewID);
 app.post("/api/reviews/:review_id/comments", postComment);
 
 app.patch("/api/reviews/:review_id", patchReviewById);
+
+app.get("/api/users", getUsers);
 
 app.all("/*", (req, res) => {
   res.status(404).send({ msg: "Invalid URL!" });
