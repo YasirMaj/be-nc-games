@@ -90,9 +90,6 @@ exports.insertComment = (review_id, author, body) => {
 };
 
 exports.updateReviewById = (review_id, votes) => {
-  if (!votes) {
-    return Promise.reject({ status: 400, msg: "Bad Request!" });
-  }
   return checkExists("reviews", "review_id", review_id).then(() => {
     return db
       .query(

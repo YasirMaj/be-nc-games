@@ -370,7 +370,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .send(reviewUpdate)
       .expect(400)
       .then((response) => {
-        expect(response.body.msg).toBe("Bad Request!");
+        expect(response.body.msg).toBe("Missing Input Data!");
       });
   });
   test("PATCH - status:404 sends an appropriate error message when given a valid but non-existent id", () => {

@@ -58,9 +58,13 @@ exports.postComment = (req, res, next) => {
 exports.patchReviewById = (req, res, next) => {
   const { review_id } = req.params;
   const { inc_votes } = req.body;
+  if (!inc_votes) {
+    res.status(400).send({ msg: "Missing Input Data!" });
+  } else {
   updateReviewById(review_id, inc_votes)
     .then((updatedReview) => {
       res.status(200).send({ review: updatedReview });
     })
     .catch(next);
+  }
 };
