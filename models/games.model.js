@@ -88,3 +88,22 @@ exports.insertComment = (review_id, author, body) => {
     });
   });
 };
+
+exports.updateReviewById = (review_id, votes) => {
+  if (!votes) {
+    return Promise.reject({ status: 400, msg: "Bad Request!" });
+  }
+  return checkExists("reviews", "review_id", review_id).then(() => {
+    return db
+      .query(
+        `UPDATE reviews
+          SET votes = votes + $2
+          WHERE review_id = $1
+          RETURNING *;`,
+        [review_id, votes]
+      )
+      .then((res) => {
+        return res.rows[0];
+      });
+  });
+};
