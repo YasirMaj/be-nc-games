@@ -3,6 +3,7 @@ const {
   selectReviews,
   selectReviewById,
   selectCommentsByReviewID,
+  insertComment,
 } = require("../models/games.model");
 
 exports.getCategories = (req, res, next) => {
@@ -37,4 +38,18 @@ exports.getCommentsByReviewID = (req, res, next) => {
       res.status(200).send({ comments });
     })
     .catch(next);
+};
+
+exports.postComment = (req, res, next) => {
+  const { review_id } = req.params;
+  const { username, body } = req.body;
+  if (!username || !body) {
+    res.status(400).send({ msg: "Missing Input Data!" });
+  } else {
+    insertComment(review_id, username, body)
+      .then((addedComment) => {
+        res.status(201).send({ comment: addedComment });
+      })
+      .catch(next);
+  }
 };
