@@ -172,7 +172,7 @@ describe("GET /reviews/:review_id/comments", () => {
       .get("/api/reviews/999/comments")
       .expect(404)
       .then((res) => {
-        expect(res.body.msg).toBe("Resource not found");
+        expect(res.body.msg).toBe("Resource not found!");
       });
   });
   test("GET - status:400 sends an appropriate error message when given a invalid id (wrong data type)", () => {
@@ -190,6 +190,80 @@ describe("GET /reviews/:review_id/comments", () => {
       .then(({ body }) => {
         const { comments } = body;
         expect(comments).toEqual([]);
+      });
+  });
+});
+
+describe("POST /api/reviews/:review_id/comments", () => {
+  test("POST - status:201, inserts a new comment into the database and responds with newly added comment", () => {
+    const newComment = {
+      username: "dav3rid",
+      body: "My kids loved it",
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          comment_id: 7,
+          review_id: 1,
+          votes: 0,
+          created_at: expect.any(String),
+          author: "dav3rid",
+          body: "My kids loved it",
+        });
+      });
+  });
+  test("POST - status:400, responds with an appropriate error message when provided with a bad comment (eg no username)", () => {
+    const newComment = {
+      body: "My kids loved it",
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(newComment)
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Missing Input Data!");
+      });
+  });
+  test("POST - status:404 sends an appropriate error message when given an non-existent username", () => {
+    const newComment = {
+      username: "Kev",
+      body: "My kids loved it",
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(newComment)
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("Resource not found!");
+      });
+  });
+  test("POST - status:404 sends an appropriate error message when given a valid but non-existent id", () => {
+    const newComment = {
+      username: "dav3rid",
+      body: "My kids loved it",
+    };
+    return request(app)
+      .post("/api/reviews/999/comments")
+      .send(newComment)
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("Resource not found!");
+      });
+  });
+  test("POST - status:400 sends an appropriate error message when given a invalid id (wrong data type)", () => {
+    const newComment = {
+      username: "dav3rid",
+      body: "My kids loved it",
+    };
+    return request(app)
+      .post("/api/reviews/something-bad/comments")
+      .send(newComment)
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Bad Request!");
       });
   });
 });

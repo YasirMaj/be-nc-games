@@ -52,7 +52,7 @@ exports.selectReviewById = (review_id) => {
 };
 
 exports.selectCommentsByReviewID = (review_id) => {
-  return checkExists('reviews', 'review_id', review_id).then(() => {
+  return checkExists("reviews", "review_id", review_id).then(() => {
     return db
       .query(
         `
@@ -65,5 +65,26 @@ exports.selectCommentsByReviewID = (review_id) => {
       .then((res) => {
         return res.rows;
       });
-  })
+  });
+};
+
+exports.insertComment = (review_id, author, body) => {
+  return checkExists("reviews", "review_id", review_id).then(() => {
+    return checkExists("users", "username", author).then(() => {
+      return db
+        .query(
+          `
+        INSERT INTO comments
+        (review_id, author, body)
+        VALUES
+        ($1, $2, $3)
+        RETURNING *;
+        `,
+          [review_id, author, body]
+        )
+        .then((res) => {
+          return res.rows[0];
+        });
+    });
+  });
 };
