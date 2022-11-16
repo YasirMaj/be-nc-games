@@ -215,6 +215,27 @@ describe("POST /api/reviews/:review_id/comments", () => {
         });
       });
   });
+  test("POST - status:201, inserts a new comment into the database and responds with newly added comment ignoring unnecessary properties", () => {
+    const newComment = {
+      username: "dav3rid",
+      body: "My kids loved it",
+      unnecessary_key: "unnecessary information",
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          comment_id: 7,
+          review_id: 1,
+          votes: 0,
+          created_at: expect.any(String),
+          author: "dav3rid",
+          body: "My kids loved it",
+        });
+      });
+  });
   test("POST - status:400, responds with an appropriate error message when provided with a bad comment (eg no username)", () => {
     const newComment = {
       body: "My kids loved it",
