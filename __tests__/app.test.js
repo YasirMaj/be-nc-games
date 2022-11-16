@@ -32,6 +32,17 @@ describe("GET /api/categories", () => {
   });
 });
 
+describe("GET - status:404, bad URL request", () => {
+  test("GET - status:404, not found", () => {
+    return request(app)
+      .get("/api/badurl")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("Invalid URL!");
+      });
+  });
+});
+
 describe("GET /api/reviews", () => {
   test("GET - status:200, responds with an array of reviews objects", () => {
     return request(app)
@@ -64,17 +75,6 @@ describe("GET /api/reviews", () => {
       .then(({ body }) => {
         const { reviews } = body;
         expect(reviews).toBeSortedBy("created_at", { descending: true });
-      });
-  });
-});
-
-describe("GET - status:404, bad URL request", () => {
-  test("GET - status:404, not found", () => {
-    return request(app)
-      .get("/api/badurl")
-      .expect(404)
-      .then((res) => {
-        expect(res.body.msg).toBe("Invalid URL!");
       });
   });
 });
@@ -391,6 +391,43 @@ describe("PATCH /api/reviews/:review_id", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad Request!");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  test("GET - status:200, responds with an array of users objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("GET - status:200, responds with a user object with the correct content", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users[0]).toEqual(
+          expect.objectContaining({
+            username: "mallionaire",
+            name: "haz",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          })
+        );
       });
   });
 });
