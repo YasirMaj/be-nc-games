@@ -510,7 +510,7 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-describe.only('GET /api', () => {
+describe('GET /api', () => {
   test('GET - status:200, responds with a JSON file of all the endpoints', () => {
     return request(app)
     .get("/api")
