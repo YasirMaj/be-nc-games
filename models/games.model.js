@@ -162,7 +162,3 @@ exports.removeCommentById = (comment_id) => {
       }
     });
 };
-
-exports.selectEndpoints = () => {
-  return endpoints;
-};
