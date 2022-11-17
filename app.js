@@ -13,6 +13,7 @@ const {
   patchReviewById,
   getUsers,
   deleteCommentByID,
+  getEndpoints,
 } = require("./controllers/games.controller");
 
 const app = express();
@@ -34,6 +35,8 @@ app.patch("/api/reviews/:review_id", patchReviewById);
 app.get("/api/users", getUsers);
 
 app.delete("/api/comments/:comment_id", deleteCommentByID);
+
+app.get("/api", getEndpoints);
 
 app.all("/*", (req, res) => {
   res.status(404).send({ msg: "Invalid URL!" });

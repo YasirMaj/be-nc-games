@@ -1,6 +1,6 @@
 const db = require("../db/connection");
-const reviews = require("../db/data/test-data/reviews");
 const { checkExists } = require("../db/seeds/utils");
+const endpoints = require("../endpoints.json");
 
 exports.selectCategories = () => {
   return db.query("SELECT * FROM categories;").then((categories) => {

@@ -3,6 +3,7 @@ const request = require("supertest");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const data = require("../db/data/test-data/index");
+const endpoints = require("../endpoints.json")
 
 beforeEach(() => {
   return seed(data);
@@ -508,3 +509,14 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe('GET /api', () => {
+  test('GET - status:200, responds with a JSON file of all the endpoints', () => {
+    return request(app)
+    .get("/api")
+    .expect(200)
+    .then((response) => {
+      expect(response.body.endpoints).toEqual(endpoints)
+    })
+  })
+})
