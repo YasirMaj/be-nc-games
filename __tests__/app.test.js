@@ -100,7 +100,7 @@ describe("GET /api/reviews", () => {
       .expect(200)
       .then(({ body }) => {
         const { reviews } = body;
-          expect(reviews).toBeSortedBy("title", { descending: true });;
+        expect(reviews).toBeSortedBy("title", { descending: true });
       });
   });
   test("GET - status:400, invalid sort query!", () => {
@@ -491,6 +491,20 @@ describe("GET /api/users", () => {
               "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
           })
         );
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("DELETE - status:204, deletes the specified comment and sends no body back", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  test("DELETE - status:404 responds with an appropriate error message when given a non-existent id", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Comment Does Not Exist!");
       });
   });
 });
