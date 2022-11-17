@@ -7,6 +7,7 @@ const {
   updateReviewById,
   selectUsers,
   removeCommentById,
+  selectEndpoints,
 } = require("../models/games.model");
 
 exports.getCategories = (req, res, next) => {
@@ -87,4 +88,9 @@ exports.deleteCommentByID = (req, res, next) => {
       res.status(204).send();
     })
     .catch(next);
+};
+
+exports.getEndpoints = (req, res, next) => {
+  const endpoints = selectEndpoints()
+      res.status(200).send({endpoints});
 };
