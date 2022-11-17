@@ -122,6 +122,15 @@ describe("GET /api/reviews", () => {
         });
       });
   });
+  test("GET - status:200, can filter reviews by category and will return empty array if no reviews for chosen category", () => {
+    return request(app)
+      .get("/api/reviews?category=children's games")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews).toHaveLength(0);
+      });
+  });
   test("GET - status:404, invalid filter query!", () => {
     return request(app)
       .get("/api/reviews?category=something bad")
