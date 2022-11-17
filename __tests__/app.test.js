@@ -97,6 +97,7 @@ describe("GET /reviews/:review_id", () => {
           review_img_url: expect.any(String),
           created_at: expect.any(String),
           votes: expect.any(Number),
+          comment_count: "0",
         });
       });
   });
