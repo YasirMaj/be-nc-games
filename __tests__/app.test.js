@@ -12,6 +12,17 @@ afterAll(() => {
   return db.end();
 });
 
+describe("GET - status:404, bad URL request", () => {
+  test("GET - status:404, not found", () => {
+    return request(app)
+      .get("/api/badurl")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("Invalid URL!");
+      });
+  });
+});
+
 describe("GET /api/categories", () => {
   test("GET - status:200, responds with an array of categories objects", () => {
     return request(app)
@@ -28,17 +39,6 @@ describe("GET /api/categories", () => {
             })
           );
         });
-      });
-  });
-});
-
-describe("GET - status:404, bad URL request", () => {
-  test("GET - status:404, not found", () => {
-    return request(app)
-      .get("/api/badurl")
-      .expect(404)
-      .then((res) => {
-        expect(res.body.msg).toBe("Invalid URL!");
       });
   });
 });
@@ -68,13 +68,75 @@ describe("GET /api/reviews", () => {
         });
       });
   });
-  test("GET - status:200, can order array of games by descending date", () => {
+  test("GET - status:200, can order array of reviews by descending date by default", () => {
     return request(app)
       .get("/api/reviews")
       .expect(200)
       .then(({ body }) => {
         const { reviews } = body;
         expect(reviews).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET - status:200, can order array of reviews by ascending value", () => {
+    return request(app)
+      .get("/api/reviews?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews).toBeSortedBy("created_at");
+      });
+  });
+  test("GET - status:400, invalid order query!", () => {
+    return request(app)
+      .get("/api/reviews?order=something bad")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Order Query!");
+      });
+  });
+  test("GET - status:200, can sort array of reviews by specified sort_by value", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=title")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+          expect(reviews).toBeSortedBy("title", { descending: true });;
+      });
+  });
+  test("GET - status:400, invalid sort query!", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=something bad")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Sort Query!");
+      });
+  });
+  test("GET - status:200, can filter reviews by category", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        reviews.forEach((review) => {
+          expect(review.category).toBe("social deduction");
+        });
+      });
+  });
+  test("GET - status:200, can filter reviews by category and will return empty array if no reviews for chosen category", () => {
+    return request(app)
+      .get("/api/reviews?category=children's games")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews).toHaveLength(0);
+      });
+  });
+  test("GET - status:404, invalid filter query!", () => {
+    return request(app)
+      .get("/api/reviews?category=something bad")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Resource not found!");
       });
   });
 });
