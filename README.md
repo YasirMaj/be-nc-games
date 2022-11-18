@@ -14,7 +14,7 @@ Data about games is posted in reviews which contain the title of the game, name 
 
 ### You can visit this project live here: https://games.cyclic.app
 
-A list of endpoints is provided: [here](https://games.cyclic.app/api).
+A list of endpoints are provided: [here](https://games.cyclic.app/api).
 
 # Setup
 
