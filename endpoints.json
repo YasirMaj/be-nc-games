@@ -120,12 +120,11 @@
     "description": "serves an user object",
     "queries": [],
     "exampleResponse": {
-      "users": 
-        {
-          "username": "mallionaire",
-          "name": "haz",
-          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-        }
+      "users": {
+        "username": "mallionaire",
+        "name": "haz",
+        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+      }
     }
   },
   "PATCH /api/comments/:comment_id": {
@@ -139,6 +138,30 @@
         "author": "bainesface",
         "review_id": 2,
         "created_at": 1610964101251
+      }
+    }
+  },
+  "POST /api/reviews": {
+    "description": "inserts a new review object",
+    "required inputs": [
+      "owner",
+      "title",
+      "review_body",
+      "designer",
+      "category"
+    ],
+    "exampleResponse": {
+      "review": {
+        "review_id": 14,
+        "votes": 0,
+        "created_at": 1610964101251,
+        "review_img_url": "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+        "comment_count": "0",
+        "owner": "dav3rid",
+        "title": "risk",
+        "review_body": "A game of strategy and domination",
+        "designer": "Albert Lamorisse",
+        "category": "euro game"
       }
     }
   }

@@ -640,3 +640,90 @@ describe("PATCH /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("POST /api/reviews", () => {
+  test("POST - status:201, inserts a new review into the database and responds with newly added review", () => {
+    const newReview = {
+      owner: "dav3rid",
+      title: "risk",
+      review_body: "A game of strategy and domination",
+      designer: "Albert Lamorisse",
+      category: "euro game",
+    };
+    return request(app)
+      .post("/api/reviews")
+      .send(newReview)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.review).toEqual({
+          review_id: 14,
+          votes: 0,
+          created_at: expect.any(String),
+          review_img_url:
+            "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+          comment_count: "0",
+          ...newReview,
+        });
+      });
+  });
+  test("POST - status:201, inserts a new Review into the database and responds with newly added review ignoring unnecessary properties", () => {
+    const newReview = {
+      owner: "dav3rid",
+      title: "risk",
+      review_body: "A game of strategy and domination",
+      designer: "Albert Lamorisse",
+      category: "euro game",
+      unnecessary_key: "unnecessary information",
+    };
+    return request(app)
+      .post("/api/reviews")
+      .send(newReview)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.review).toEqual({
+          review_id: 14,
+          votes: 0,
+          created_at: expect.any(String),
+          review_img_url:
+            "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+          comment_count: "0",
+          owner: "dav3rid",
+          title: "risk",
+          review_body: "A game of strategy and domination",
+          designer: "Albert Lamorisse",
+          category: "euro game",
+        });
+      });
+  });
+  test("POST - status:400, responds with an appropriate error message when provided with a bad review (eg no title)", () => {
+    const newReview = {
+      owner: "dav3rid",
+      review_body: "A game of strategy and domination",
+      designer: "Albert Lamorisse",
+      category: "euro game",
+    };
+    return request(app)
+      .post("/api/reviews")
+      .send(newReview)
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Missing Input Data!");
+      });
+  });
+  test("POST - status:404 sends an appropriate error message when given an non-existent owner", () => {
+    const newReview = {
+      owner: "Kev",
+      title: "risk",
+      review_body: "A game of strategy and domination",
+      designer: "Albert Lamorisse",
+      category: "euro game",
+    };
+    return request(app)
+      .post("/api/reviews")
+      .send(newReview)
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("Resource not found!");
+      });
+  });
+});
