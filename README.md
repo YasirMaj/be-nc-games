@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The purpose of this repo is to build an API for the purpose of accessing application data programmatically. The intention here is to mimic the building of a real world backend service (such as reddit) which should provide this information to the front end architecture.
+The purpose of this repo is to build a RESTful API for the purpose of accessing application data programmatically. The intention here is to mimic the building of a real world backend service (such as reddit) which should provide this information to the front end architecture.
 
 The database will be made in PSQL, and you will interact with it using [node-postgres](https://node-postgres.com/).
 
@@ -14,7 +14,7 @@ Data about games is posted in reviews which contain the title of the game, name 
 
 ### You can visit this project live here: https://games.cyclic.app
 
-A list of endpoint is provided: [here](https://games.cyclic.app/api).
+A list of endpoints is provided: [here](https://games.cyclic.app/api).
 
 # Setup
 
