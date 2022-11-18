@@ -7,8 +7,9 @@ const {
   updateReviewById,
   selectUsers,
   removeCommentById,
+  selectUserByUsername,
 } = require("../models/games.model");
-const endpoints = require("../endpoints.json")
+const endpoints = require("../endpoints.json");
 
 exports.getCategories = (req, res, next) => {
   selectCategories()
@@ -91,5 +92,14 @@ exports.deleteCommentByID = (req, res, next) => {
 };
 
 exports.getEndpoints = (req, res, next) => {
-      res.status(200).send({endpoints});
+  res.status(200).send({ endpoints });
+};
+
+exports.getUserByUsername = (req, res, next) => {
+  const { username } = req.params;
+  selectUserByUsername(username)
+    .then((user) => {
+      res.status(200).send({ user });
+    })
+    .catch(next);
 };
