@@ -9,6 +9,7 @@ const {
   removeCommentById,
   selectUserByUsername,
   updateCommentById,
+  insertReview,
 } = require("../models/games.model");
 const endpoints = require("../endpoints.json");
 
@@ -114,6 +115,19 @@ exports.patchCommentById = (req, res, next) => {
     updateCommentById(comment_id, inc_votes)
       .then((updatedComment) => {
         res.status(200).send({ comment: updatedComment });
+      })
+      .catch(next);
+  }
+};
+
+exports.postReview = (req, res, next) => {
+  const { owner, title, review_body, designer, category } = req.body;
+  if (!owner || !title || !review_body || !designer || !category) {
+    res.status(400).send({ msg: "Missing Input Data!" });
+  } else {
+    insertReview(owner, title, review_body, designer, category)
+      .then((addedReview) => {
+        res.status(201).send({ review: addedReview });
       })
       .catch(next);
   }
