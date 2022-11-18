@@ -127,5 +127,19 @@
           "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
         }
     }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "increments or decrements the votes on selected comment object",
+    "required input": ["inc_votes"],
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 1,
+        "body": "I loved this game too!",
+        "votes": 17,
+        "author": "bainesface",
+        "review_id": 2,
+        "created_at": 1610964101251
+      }
+    }
   }
 }

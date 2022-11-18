@@ -8,6 +8,7 @@ const {
   selectUsers,
   removeCommentById,
   selectUserByUsername,
+  updateCommentById,
 } = require("../models/games.model");
 const endpoints = require("../endpoints.json");
 
@@ -102,4 +103,18 @@ exports.getUserByUsername = (req, res, next) => {
       res.status(200).send({ user });
     })
     .catch(next);
+};
+
+exports.patchCommentById = (req, res, next) => {
+  const { comment_id } = req.params;
+  const { inc_votes } = req.body;
+  if (!inc_votes) {
+    res.status(400).send({ msg: "Missing Input Data!" });
+  } else {
+    updateCommentById(comment_id, inc_votes)
+      .then((updatedComment) => {
+        res.status(200).send({ comment: updatedComment });
+      })
+      .catch(next);
+  }
 };

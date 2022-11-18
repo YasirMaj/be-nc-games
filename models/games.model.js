@@ -139,8 +139,8 @@ exports.updateReviewById = (review_id, votes) => {
           RETURNING *;`,
         [review_id, votes]
       )
-      .then((res) => {
-        return res.rows[0];
+      .then((review) => {
+        return review.rows[0];
       });
   });
 };
@@ -169,6 +169,22 @@ exports.selectUserByUsername = (username) => {
       .query("SELECT * FROM users WHERE username = $1;", [username])
       .then((user) => {
         return user.rows[0];
+      });
+  });
+};
+
+exports.updateCommentById = (comment_id, votes) => {
+  return checkExists("comments", "comment_id", comment_id).then(() => {
+    return db
+      .query(
+        `UPDATE comments
+          SET votes = votes + $2
+          WHERE comment_id = $1
+          RETURNING *;`,
+        [comment_id, votes]
+      )
+      .then((comment) => {
+        return comment.rows[0];
       });
   });
 };
