@@ -3,7 +3,7 @@ const request = require("supertest");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const data = require("../db/data/test-data/index");
-const endpoints = require("../endpoints.json")
+const endpoints = require("../endpoints.json");
 
 beforeEach(() => {
   return seed(data);
@@ -142,7 +142,7 @@ describe("GET /api/reviews", () => {
   });
 });
 
-describe("GET /reviews/:review_id", () => {
+describe("GET /api/reviews/:review_id", () => {
   test("GET - status:200, responds with a review object", () => {
     return request(app)
       .get("/api/reviews/1")
@@ -182,7 +182,7 @@ describe("GET /reviews/:review_id", () => {
   });
 });
 
-describe("GET /reviews/:review_id/comments", () => {
+describe("GET /api/reviews/:review_id/comments", () => {
   test("GET - status:200, responds with an array of comment objects", () => {
     return request(app)
       .get("/api/reviews/2/comments")
@@ -510,16 +510,16 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-describe('GET /api', () => {
-  test('GET - status:200, responds with a JSON file of all the endpoints', () => {
+describe("GET /api", () => {
+  test("GET - status:200, responds with a JSON file of all the endpoints", () => {
     return request(app)
-    .get("/api")
-    .expect(200)
-    .then((response) => {
-      expect(response.body.endpoints).toEqual(endpoints)
-    })
-  })
-})
+      .get("/api")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.endpoints).toEqual(endpoints);
+      });
+  });
+});
 
 describe("GET /users/:username", () => {
   test("GET - status:200, responds with a user object", () => {
@@ -531,9 +531,9 @@ describe("GET /users/:username", () => {
         expect(user).toBeInstanceOf(Object);
         expect.objectContaining({
           username: "mallionaire",
-            name: "haz",
-            avatar_url:
-              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          name: "haz",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
         });
       });
   });
@@ -543,6 +543,100 @@ describe("GET /users/:username", () => {
       .expect(404)
       .then((res) => {
         expect(res.body.msg).toBe("Resource not found!");
+      });
+  });
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("PATCH - status:200, responds with the a incremented comment", () => {
+    const commentUpdate = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(commentUpdate)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          comment_id: 1,
+          body: "I loved this game too!",
+          votes: 17,
+          author: "bainesface",
+          review_id: 2,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("PATCH - status:200, responds with the a decremented comment", () => {
+    const commentUpdate = { inc_votes: -1 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(commentUpdate)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          comment_id: 1,
+          body: "I loved this game too!",
+          votes: 15,
+          author: "bainesface",
+          review_id: 2,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("PATCH - status:200 responds with the a incremented comment ignoring any unnecessary properties", () => {
+    const commentUpdate = { inc_votes: 1, name: "Mitch" };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(commentUpdate)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          comment_id: 1,
+          body: "I loved this game too!",
+          votes: 17,
+          author: "bainesface",
+          review_id: 2,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("PATCH - status:400 sends an appropriate error message when given a invalid data type for inc_vote", () => {
+    const commentUpdate = { inc_votes: "badRequest" };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(commentUpdate)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request!");
+      });
+  });
+  test("PATCH - status:400 sends an appropriate error message when inc_vote is not present on the request body", () => {
+    const commentUpdate = {};
+    return request(app)
+      .patch("/api/comments/1")
+      .send(commentUpdate)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Missing Input Data!");
+      });
+  });
+  test("PATCH - status:404 sends an appropriate error message when given a valid but non-existent id", () => {
+    const commentUpdate = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/999")
+      .send(commentUpdate)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Resource not found!");
+      });
+  });
+  test("PATCH - status:400 sends an appropriate error message when given a invalid id (wrong data type)", () => {
+    const commentUpdate = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/something-bad")
+      .send(commentUpdate)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request!");
       });
   });
 });
