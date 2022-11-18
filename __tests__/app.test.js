@@ -520,3 +520,29 @@ describe('GET /api', () => {
     })
   })
 })
+
+describe("GET /users/:username", () => {
+  test("GET - status:200, responds with a user object", () => {
+    return request(app)
+      .get("/api/users/mallionaire")
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user).toBeInstanceOf(Object);
+        expect.objectContaining({
+          username: "mallionaire",
+            name: "haz",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+      });
+  });
+  test("GET - status:404 sends an appropriate error message when given a non-existent username", () => {
+    return request(app)
+      .get("/api/users/999")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("Resource not found!");
+      });
+  });
+});

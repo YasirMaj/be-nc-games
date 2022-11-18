@@ -115,5 +115,17 @@
     "description": "deletes selected comment",
     "queries": [],
     "exampleResponse": {}
+  },
+  " GET /api/users/:username": {
+    "description": "serves an user object",
+    "queries": [],
+    "exampleResponse": {
+      "users": 
+        {
+          "username": "mallionaire",
+          "name": "haz",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+    }
   }
 }
