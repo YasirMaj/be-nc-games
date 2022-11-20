@@ -51,7 +51,7 @@ describe("GET /api/reviews", () => {
       .expect(200)
       .then(({ body }) => {
         const { reviews } = body;
-        expect(reviews).toHaveLength(13);
+        expect(reviews).toHaveLength(10);
         reviews.forEach((review) => {
           expect(review).toEqual(
             expect.objectContaining({
@@ -63,7 +63,7 @@ describe("GET /api/reviews", () => {
               review_img_url: expect.any(String),
               created_at: expect.any(String),
               votes: expect.any(Number),
-              comment_count: expect.any(String),
+              comment_count: expect.any(Number),
             })
           );
         });
@@ -138,6 +138,69 @@ describe("GET /api/reviews", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Resource not found!");
+      });
+  });
+});
+describe("GET /api/reviews - pagination", () => {
+  test("GET - status:200, defaults to returning 10 responses when not passed a limit", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews.length).toBe(10);
+      });
+  });
+  test("GET - status:200, returns stated number of responses if limit is passed", () => {
+    return request(app)
+      .get("/api/reviews?limit=8")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews.length).toBe(8);
+      });
+  });
+  test("GET - status:200, returns a total_count property as a separate object", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        const { total_count } = body;
+        expect(total_count).toBe(13);
+      });
+  });
+  test("GET - status:200, returns accurate total_count property when a filter is applied", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction")
+      .expect(200)
+      .then(({ body }) => {
+        const { total_count } = body;
+        expect(total_count).toBe(11);
+      });
+  });
+  test("GET - status:400, returns an error message when passed an invalid limit ", () => {
+    return request(app)
+      .get("/api/reviews?limit=something bad")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Limit Query!");
+      });
+  });
+  test("GET - status:200, returns selected page of results if passed page value", () => {
+    return request(app)
+      .get("/api/reviews?p=2")
+      .expect(200)
+      .then(({ body }) => {
+        const { reviews } = body;
+        expect(reviews.length).toBe(3);
+      });
+  });
+  test("GET - status:400, returns an error message when passed an invalid page value", () => {
+    return request(app)
+      .get("/api/reviews?p=something bad")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Page Query!");
       });
   });
 });
