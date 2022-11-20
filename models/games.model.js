@@ -262,17 +262,27 @@ exports.insertReview = (owner, title, review_body, designer, category) => {
 };
 
 exports.insertCategory = (slug, description) => {
-    return db
-      .query(
-        `
+  return db
+    .query(
+      `
         INSERT INTO categories
         (slug, description)
         VALUES
         ($1, $2)
         RETURNING *;`,
-        [slug, description]
-      )
-      .then((category) => {
-        return category.rows[0];
-      });
+      [slug, description]
+    )
+    .then((category) => {
+      return category.rows[0];
+    });
+};
+
+exports.removeReviewById = (review_id) => {
+  return db
+    .query("DELETE FROM reviews WHERE review_id = $1 RETURNING*;", [review_id])
+    .then((res) => {
+      if (!res.rows.length) {
+        return Promise.reject({ status: 404, msg: "Review Does Not Exist!" });
+      }
+    });
 };

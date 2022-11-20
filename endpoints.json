@@ -174,5 +174,10 @@
         "description": "games of displacement"
       }
     }
+  },
+  "DELETE /api/reviews/:review_id": {
+    "description": "deletes selected review",
+    "queries": [],
+    "exampleResponse": {}
   }
 }

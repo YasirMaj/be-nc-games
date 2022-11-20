@@ -888,3 +888,17 @@ describe("POST /api/categories", () => {
       });
   });
 });
+
+describe.only("DELETE /api/reviews/:review_id", () => {
+  test("DELETE - status:204, deletes the specified review and sends no body back", () => {
+    return request(app).delete("/api/reviews/1").expect(204);
+  });
+  test("DELETE - status:404 responds with an appropriate error message when given a non-existent id", () => {
+    return request(app)
+      .delete("/api/reviews/999")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Review Does Not Exist!");
+      });
+  });
+});
