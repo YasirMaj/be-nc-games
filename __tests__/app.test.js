@@ -889,7 +889,7 @@ describe("POST /api/categories", () => {
   });
 });
 
-describe.only("DELETE /api/reviews/:review_id", () => {
+describe("DELETE /api/reviews/:review_id", () => {
   test("DELETE - status:204, deletes the specified review and sends no body back", () => {
     return request(app).delete("/api/reviews/1").expect(204);
   });
