@@ -11,6 +11,7 @@ const {
   updateCommentById,
   insertReview,
   insertCategory,
+  removeReviewById,
 } = require("../models/games.model");
 const endpoints = require("../endpoints.json");
 
@@ -146,4 +147,13 @@ exports.postCategory = (req, res, next) => {
       })
       .catch(next);
   }
+};
+
+exports.deleteReviewByID = (req, res, next) => {
+  const { review_id } = req.params;
+  removeReviewById(review_id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch(next);
 };
