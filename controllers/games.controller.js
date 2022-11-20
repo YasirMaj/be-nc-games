@@ -10,6 +10,7 @@ const {
   selectUserByUsername,
   updateCommentById,
   insertReview,
+  insertCategory,
 } = require("../models/games.model");
 const endpoints = require("../endpoints.json");
 
@@ -41,7 +42,7 @@ exports.getReviewById = (req, res, next) => {
 
 exports.getCommentsByReviewID = (req, res, next) => {
   const { review_id } = req.params;
-  const {limit, p} = req.query
+  const { limit, p } = req.query;
   selectCommentsByReviewID(review_id, limit, p)
     .then(({ comments, total_count }) => {
       res.status(200).send({ comments, total_count });
@@ -129,6 +130,19 @@ exports.postReview = (req, res, next) => {
     insertReview(owner, title, review_body, designer, category)
       .then((addedReview) => {
         res.status(201).send({ review: addedReview });
+      })
+      .catch(next);
+  }
+};
+
+exports.postCategory = (req, res, next) => {
+  const { slug, description } = req.body;
+  if (!slug || !description) {
+    res.status(400).send({ msg: "Missing Input Data!" });
+  } else {
+    insertCategory(slug, description)
+      .then((addedCategory) => {
+        res.status(201).send({ category: addedCategory });
       })
       .catch(next);
   }

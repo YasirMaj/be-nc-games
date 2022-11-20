@@ -164,5 +164,15 @@
         "category": "euro game"
       }
     }
+  },
+  "POST /api/categories": {
+    "description": "inserts a new category object",
+    "required inputs": ["slug", "description"],
+    "exampleResponse": {
+      "category": {
+        "slug": "displace",
+        "description": "games of displacement"
+      }
+    }
   }
 }

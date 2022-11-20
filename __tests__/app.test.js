@@ -840,3 +840,51 @@ describe("POST /api/reviews", () => {
       });
   });
 });
+
+describe("POST /api/categories", () => {
+  test("POST - status:201, inserts a new category into the database and responds with newly added category", () => {
+    const newCategory = {
+      slug: "displace",
+      description: "games of displacement",
+    };
+    return request(app)
+      .post("/api/categories")
+      .send(newCategory)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.category).toEqual({
+          ...newCategory,
+        });
+      });
+  });
+  test("POST - status:201, inserts a new category into the database and responds with newly added category ignoring unnecessary properties", () => {
+    const newCategory = {
+      slug: "displace",
+      description: "games of displacement",
+      unnecessary_key: "unnecessary information",
+    };
+    return request(app)
+      .post("/api/categories")
+      .send(newCategory)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.category).toEqual({
+          slug: "displace",
+          description: "games of displacement",
+        });
+      });
+  });
+  test("POST - status:400, responds with an appropriate error message when provided with a bad category (eg no slug)", () => {
+    const newCategory = {
+      description: "games of displacement",
+      unnecessary_key: "unnecessary information",
+    };
+    return request(app)
+      .post("/api/categories")
+      .send(newCategory)
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Missing Input Data!");
+      });
+  });
+});
