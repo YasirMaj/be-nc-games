@@ -11,7 +11,9 @@ exports.selectCategories = () => {
 exports.selectReviews = (
   sort_by = "reviews.created_at",
   order = "desc",
-  category
+  category,
+  limit = 10,
+  p = 1
 ) => {
   const validColumns = [
     "title",
@@ -35,6 +37,14 @@ exports.selectReviews = (
     return Promise.reject({ status: 400, msg: "Invalid Order Query!" });
   }
 
+  if (!parseInt(limit)) {
+    return Promise.reject({ status: 400, msg: "Invalid Limit Query!" });
+  }
+
+  if (!parseInt(p)) {
+    return Promise.reject({ status: 400, msg: "Invalid Page Query!" });
+  }
+
   let queryStr = `
   SELECT 
   title,
@@ -45,12 +55,14 @@ exports.selectReviews = (
   review_img_url, 
   reviews.created_at, 
   reviews.votes,
-  COUNT(comments.review_id) AS comment_count
+  COUNT(comments.review_id):: INT AS comment_count,
+  COUNT(*) OVER():: INT AS total_count
   FROM reviews
   LEFT JOIN comments 
   ON reviews.review_id = comments.review_id`;
 
   const queryValues = [];
+  const offset = (parseInt(p) - 1) * parseInt(limit);
 
   if (category) {
     return checkExists("categories", "slug", category)
@@ -58,14 +70,34 @@ exports.selectReviews = (
         queryValues.push(category);
         queryStr += ` WHERE category = $1 
                       GROUP BY reviews.review_id 
-                      ORDER BY ${sort_by} ${order};`;
+                      ORDER BY ${sort_by} ${order}
+                      LIMIT ${limit} OFFSET ${offset};`;
         return db.query(queryStr, queryValues);
       })
-      .then((reviews) => reviews.rows);
+      .then((result) => {
+        const total_count = result.rows.length ? result.rows[0].total_count : 0;
+        const reviews = result.rows.map((review) => {
+          const newReview = { ...review };
+          delete newReview.total_count;
+          return newReview;
+        });
+        return { reviews, total_count };
+      });
   }
 
-  queryStr += ` GROUP BY reviews.review_id ORDER BY ${sort_by} ${order};`;
-  return db.query(queryStr, queryValues).then((reviews) => reviews.rows);
+  queryStr += ` 
+  GROUP BY reviews.review_id 
+  ORDER BY ${sort_by} ${order} 
+  LIMIT ${limit} OFFSET ${offset};`;
+  return db.query(queryStr, queryValues).then((result) => {
+    const total_count = result.rows.length ? result.rows[0].total_count : 0;
+    const reviews = result.rows.map((review) => {
+      const newReview = { ...review };
+      delete newReview.total_count;
+      return newReview;
+    });
+    return { reviews, total_count };
+  });
 };
 
 exports.selectReviewById = (review_id) => {
@@ -204,7 +236,7 @@ exports.insertReview = (owner, title, review_body, designer, category) => {
           [owner, title, review_body, designer, category]
         )
         .then((review) => {
-          review.rows[0].comment_count = "0"
+          review.rows[0].comment_count = "0";
           return review.rows[0];
         });
     });

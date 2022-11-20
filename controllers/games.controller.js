@@ -22,10 +22,10 @@ exports.getCategories = (req, res, next) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  const { sort_by, order, category } = req.query;
-  selectReviews(sort_by, order, category)
-    .then((reviews) => {
-      res.status(200).send({ reviews });
+  const { sort_by, order, category, limit, p } = req.query;
+  selectReviews(sort_by, order, category, limit, p)
+    .then(({ reviews, total_count }) => {
+      res.status(200).send({ reviews, total_count });
     })
     .catch(next);
 };
