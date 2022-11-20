@@ -41,9 +41,10 @@ exports.getReviewById = (req, res, next) => {
 
 exports.getCommentsByReviewID = (req, res, next) => {
   const { review_id } = req.params;
-  selectCommentsByReviewID(review_id)
-    .then((comments) => {
-      res.status(200).send({ comments });
+  const {limit, p} = req.query
+  selectCommentsByReviewID(review_id, limit, p)
+    .then(({ comments, total_count }) => {
+      res.status(200).send({ comments, total_count });
     })
     .catch(next);
 };

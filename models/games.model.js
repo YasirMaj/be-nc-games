@@ -74,9 +74,9 @@ exports.selectReviews = (
                       LIMIT ${limit} OFFSET ${offset};`;
         return db.query(queryStr, queryValues);
       })
-      .then((result) => {
-        const total_count = result.rows.length ? result.rows[0].total_count : 0;
-        const reviews = result.rows.map((review) => {
+      .then((res) => {
+        const total_count = res.rows.length ? res.rows[0].total_count : 0;
+        const reviews = res.rows.map((review) => {
           const newReview = { ...review };
           delete newReview.total_count;
           return newReview;
@@ -89,9 +89,9 @@ exports.selectReviews = (
   GROUP BY reviews.review_id 
   ORDER BY ${sort_by} ${order} 
   LIMIT ${limit} OFFSET ${offset};`;
-  return db.query(queryStr, queryValues).then((result) => {
-    const total_count = result.rows.length ? result.rows[0].total_count : 0;
-    const reviews = result.rows.map((review) => {
+  return db.query(queryStr, queryValues).then((res) => {
+    const total_count = res.rows.length ? res.rows[0].total_count : 0;
+    const reviews = res.rows.map((review) => {
       const newReview = { ...review };
       delete newReview.total_count;
       return newReview;
@@ -106,7 +106,7 @@ exports.selectReviewById = (review_id) => {
       `
     SELECT 
     reviews.*, 
-    COUNT(comments.review_id) AS comment_count
+    COUNT(comments.review_id):: INT AS comment_count
     FROM reviews
     LEFT JOIN comments
     ON reviews.review_id = comments.review_id
@@ -123,19 +123,37 @@ exports.selectReviewById = (review_id) => {
     });
 };
 
-exports.selectCommentsByReviewID = (review_id) => {
+exports.selectCommentsByReviewID = (review_id, limit = 10, p = 1) => {
   return checkExists("reviews", "review_id", review_id).then(() => {
+    if (!parseInt(limit)) {
+      return Promise.reject({ status: 400, msg: "Invalid Limit Query!" });
+    }
+
+    if (!parseInt(p)) {
+      return Promise.reject({ status: 400, msg: "Invalid Page Query!" });
+    }
+
+    const offset = (parseInt(p) - 1) * parseInt(limit);
+
     return db
       .query(
         `
-      SELECT * FROM comments
+      SELECT comments.*,
+      COUNT(*) OVER()::INT as total_count
+      FROM comments
       WHERE review_id = $1
-      ORDER BY created_at DESC;
-    `,
-        [review_id]
+      ORDER BY created_at DESC
+      LIMIT $2 OFFSET $3;`,
+        [review_id, limit, offset]
       )
       .then((res) => {
-        return res.rows;
+        const total_count = res.rows.length ? res.rows[0].total_count : 0;
+        const comments = res.rows.map((comment) => {
+          const newComment = { ...comment };
+          delete newComment.total_count;
+          return newComment;
+        });
+        return { comments, total_count };
       });
   });
 };

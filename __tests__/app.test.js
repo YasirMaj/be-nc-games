@@ -140,8 +140,6 @@ describe("GET /api/reviews", () => {
         expect(body.msg).toBe("Resource not found!");
       });
   });
-});
-describe("GET /api/reviews - pagination", () => {
   test("GET - status:200, defaults to returning 10 responses when not passed a limit", () => {
     return request(app)
       .get("/api/reviews")
@@ -160,25 +158,7 @@ describe("GET /api/reviews - pagination", () => {
         expect(reviews.length).toBe(8);
       });
   });
-  test("GET - status:200, returns a total_count property as a separate object", () => {
-    return request(app)
-      .get("/api/reviews")
-      .expect(200)
-      .then(({ body }) => {
-        const { total_count } = body;
-        expect(total_count).toBe(13);
-      });
-  });
-  test("GET - status:200, returns accurate total_count property when a filter is applied", () => {
-    return request(app)
-      .get("/api/reviews?category=social deduction")
-      .expect(200)
-      .then(({ body }) => {
-        const { total_count } = body;
-        expect(total_count).toBe(11);
-      });
-  });
-  test("GET - status:400, returns an error message when passed an invalid limit ", () => {
+  test("GET - status:400, returns an error message when passed an invalid limit", () => {
     return request(app)
       .get("/api/reviews?limit=something bad")
       .expect(400)
@@ -203,6 +183,24 @@ describe("GET /api/reviews - pagination", () => {
         expect(body.msg).toBe("Invalid Page Query!");
       });
   });
+  test("GET - status:200, returns a total_count property as a separate object", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        const { total_count } = body;
+        expect(total_count).toBe(13);
+      });
+  });
+  test("GET - status:200, returns accurate total_count property when a filter is applied", () => {
+    return request(app)
+      .get("/api/reviews?category=social deduction")
+      .expect(200)
+      .then(({ body }) => {
+        const { total_count } = body;
+        expect(total_count).toBe(11);
+      });
+  });
 });
 
 describe("GET /api/reviews/:review_id", () => {
@@ -223,7 +221,7 @@ describe("GET /api/reviews/:review_id", () => {
           review_img_url: expect.any(String),
           created_at: expect.any(String),
           votes: expect.any(Number),
-          comment_count: "0",
+          comment_count: 0,
         });
       });
   });
@@ -317,6 +315,58 @@ describe("GET /api/reviews/:review_id/comments", () => {
       .then(({ body }) => {
         const { comments } = body;
         expect(comments).toEqual([]);
+      });
+  });
+  test("GET - status:200, defaults to returning 10 responses when not passed a limit", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments.length).toBe(3);
+      });
+  });
+  test("GET - status:200, returns stated number of responses if limit is passed", () => {
+    return request(app)
+      .get("/api/reviews/2/comments?limit=2")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments.length).toBe(2);
+      });
+  });
+  test("GET - status:400, returns an error message when passed an invalid limit ", () => {
+    return request(app)
+      .get("/api/reviews/2/comments?limit=something bad")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Limit Query!");
+      });
+  });
+  test("GET - status:200, returns selected page of results if passed page value", () => {
+    return request(app)
+      .get("/api/reviews/2/comments?p=2")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments.length).toBe(0);
+      });
+  });
+  test("GET - status:400, returns an error message when passed an invalid page value", () => {
+    return request(app)
+      .get("/api/reviews/2/comments?p=something bad")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Page Query!");
+      });
+  });
+  test("GET - status:200, returns a total_count property as a separate object", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { total_count } = body;
+        expect(total_count).toBe(3);
       });
   });
 });
