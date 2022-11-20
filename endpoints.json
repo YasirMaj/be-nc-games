@@ -179,5 +179,16 @@
     "description": "deletes selected review",
     "queries": [],
     "exampleResponse": {}
+  },
+  "POST /api/users": {
+    "description": "inserts a new user object",
+    "required inputs": ["username", "name", "avatar_url"],
+    "exampleResponse": {
+      "user": {
+        "username": "Yas",
+        "name": "Yasir",
+        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+      }
+    }
   }
 }

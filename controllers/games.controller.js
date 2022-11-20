@@ -12,6 +12,7 @@ const {
   insertReview,
   insertCategory,
   removeReviewById,
+  insertUser,
 } = require("../models/games.model");
 const endpoints = require("../endpoints.json");
 
@@ -156,4 +157,17 @@ exports.deleteReviewByID = (req, res, next) => {
       res.status(204).send();
     })
     .catch(next);
+};
+
+exports.postUser = (req, res, next) => {
+  const { username, name, avatar_url } = req.body;
+  if (!username || !name || !avatar_url) {
+    res.status(400).send({ msg: "Missing Input Data!" });
+  } else {
+    insertUser(username, name, avatar_url)
+      .then((addedUser) => {
+        res.status(201).send({ user: addedUser });
+      })
+      .catch(next);
+  }
 };

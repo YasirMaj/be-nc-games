@@ -286,3 +286,19 @@ exports.removeReviewById = (review_id) => {
       }
     });
 };
+
+exports.insertUser = (username, name, avatar_url) => {
+  return db
+    .query(
+      `
+        INSERT INTO users
+        (username, name, avatar_url)
+        VALUES
+        ($1, $2, $3)
+        RETURNING *;`,
+      [username, name, avatar_url]
+    )
+    .then((user) => {
+      return user.rows[0];
+    });
+};

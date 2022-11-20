@@ -877,7 +877,6 @@ describe("POST /api/categories", () => {
   test("POST - status:400, responds with an appropriate error message when provided with a bad category (eg no slug)", () => {
     const newCategory = {
       description: "games of displacement",
-      unnecessary_key: "unnecessary information",
     };
     return request(app)
       .post("/api/categories")
@@ -899,6 +898,61 @@ describe("DELETE /api/reviews/:review_id", () => {
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("Review Does Not Exist!");
+      });
+  });
+});
+
+describe("POST /api/users", () => {
+  test("POST - status:201, inserts a new user into the database and responds with newly added user", () => {
+    const newUser = {
+      username: "Yas",
+      name: "Yasir",
+      avatar_url:
+        "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+    };
+    return request(app)
+      .post("/api/Users")
+      .send(newUser)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.user).toEqual({
+          ...newUser,
+        });
+      });
+  });
+  test("POST - status:201, inserts a new User into the database and responds with newly added user ignoring unnecessary properties", () => {
+    const newUser = {
+      username: "Yas",
+      name: "Yasir",
+      avatar_url:
+        "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+      unnecessary_key: "unnecessary information",
+    };
+    return request(app)
+      .post("/api/users")
+      .send(newUser)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.user).toEqual({
+          username: "Yas",
+          name: "Yasir",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+      });
+  });
+  test("POST - status:400, responds with an appropriate error message when provided with a bad user (eg no username)", () => {
+    const newUser = {
+      name: "Yasir",
+      avatar_url:
+        "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+    };
+    return request(app)
+      .post("/api/users")
+      .send(newUser)
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Missing Input Data!");
       });
   });
 });
