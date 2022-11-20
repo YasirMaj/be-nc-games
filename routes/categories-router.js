@@ -1,7 +1,10 @@
-const { getCategories } = require("../controllers/games.controller");
+const {
+  getCategories,
+  postCategory,
+} = require("../controllers/games.controller");
 
 const categoriesRouter = require("express").Router();
 
-categoriesRouter.get("/", getCategories);
+categoriesRouter.route("/").get(getCategories).post(postCategory);
 
 module.exports = categoriesRouter;

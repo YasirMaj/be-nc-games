@@ -260,3 +260,19 @@ exports.insertReview = (owner, title, review_body, designer, category) => {
     });
   });
 };
+
+exports.insertCategory = (slug, description) => {
+    return db
+      .query(
+        `
+        INSERT INTO categories
+        (slug, description)
+        VALUES
+        ($1, $2)
+        RETURNING *;`,
+        [slug, description]
+      )
+      .then((category) => {
+        return category.rows[0];
+      });
+};
