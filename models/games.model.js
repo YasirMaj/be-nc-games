@@ -46,7 +46,8 @@ exports.selectReviews = (
   }
 
   let queryStr = `
-  SELECT 
+  SELECT
+  reviews.review_id, 
   title,
   category, 
   designer,

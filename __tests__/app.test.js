@@ -56,6 +56,7 @@ describe("GET /api/reviews", () => {
           expect(review).toEqual(
             expect.objectContaining({
               title: expect.any(String),
+              review_id: expect.any(Number),
               category: expect.any(String),
               designer: expect.any(String),
               owner: expect.any(String),
