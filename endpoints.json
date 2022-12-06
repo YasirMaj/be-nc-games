@@ -84,7 +84,7 @@
   },
   "PATCH /api/reviews/:review_id": {
     "description": "increments or decrements the votes on selected review object",
-    "required input": ["inc_votes"],
+    "required input": { "inc_votes": 1 },
     "exampleResponse": {
       "review": {
         "review_id": 1,
